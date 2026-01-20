@@ -3,6 +3,19 @@ import torch
 
 from .base import BaseModel
 from ..smp import *
+import transformers
+
+# Monkey patch for DynamicCache to support seen_tokens (removed in newer transformers)
+try:
+    from transformers.cache_utils import DynamicCache
+    if not hasattr(DynamicCache, 'seen_tokens'):
+        @property
+        def seen_tokens(self):
+            return self.get_seq_length()
+        DynamicCache.seen_tokens = seen_tokens
+except ImportError:
+    pass
+
 
 
 class Phi3Vision(BaseModel):
