@@ -45,7 +45,7 @@ class ChartCapDataset(ImageBaseDataset):
         # wrapper `Bleu.match(response, correct_answer)` handles lists. 
         # But it returns scalar 0-1 (divided by 100).
         
-        bleu_score = Bleu.match(predictions, references) 
+        bleu_score = Bleu.match(predictions, references) * 100
         
         # Metric 2: ROUGE-L through 'evaluate'
         try:
@@ -74,7 +74,7 @@ class ChartCapDataset(ImageBaseDataset):
             
             # Using roberta-large-mnli or similar is common, but let's stick to default or what uni_svg uses
             # uni_svg uses "en" (which defaults to roberta-large presumably)
-            bert_scorer = BERTScorer(lang="en", rescale_with_baseline=True, device=device)
+            bert_scorer = BERTScorer(lang="en", rescale_with_baseline=False, device=device)
             P, R, F1 = bert_scorer.score(predictions, references)
             bert_score_val = F1.mean().item()
         except Exception as e:
